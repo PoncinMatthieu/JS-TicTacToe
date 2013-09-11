@@ -18,9 +18,15 @@ function Popup(content) {
     <div class="content">' + this.content + '</div> \
   </div> \
 </div>')
-    }
+    };
 
     this.remove = function() {
 	$("#WaitPopup").remove();
-    }
+    };
+
+    this.update = function(content) {
+	this.remove();
+	this.content = content;
+	this.display();
+    };
 }
