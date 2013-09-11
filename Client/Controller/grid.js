@@ -7,8 +7,8 @@ Player = {
 
 function Coord(X, Y) {
     return {
-	x : (X) ? X : 0,
-	y : (Y) ? Y : 0
+	x : (typeof X === "undefined") ? 0 : X,
+	y : (typeof Y === "undefined") ? 0 : Y
     };
 }
 
@@ -19,8 +19,8 @@ function Grid() {
 
     var grid = $("#grid");
     var elems = ['<td></td>',
-		 '<td><img src="Cross.png" alt="X" /></td>',
-		 '<td><img src="Circle.png" alt="O" /></td>'];
+		 '<td><img src="Client/View/Cross.png" alt="X" /></td>',
+		 '<td><img src="Client/View/Circle.png" alt="O" /></td>'];
 
 
     this.set = function(coord, value) {
