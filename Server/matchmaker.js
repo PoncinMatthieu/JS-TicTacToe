@@ -19,13 +19,13 @@ function Player(request, response, callback, login)
 
     util.puts("Matchmaker: New player " + login);
 
-    this.login = function () {return login;}
-    this.setRoom = function (r) {room = r;}
+    this.login = function () {return login;};
+    this.setRoom = function (r) {room = r;};
 
     this.start = function (i) {
 	index = i;
 	callback(request, response, index);
-    }
+    };
 
     // setup a callback to be informed when a request is aborted
     request.connection.on('close', function() {
@@ -42,28 +42,41 @@ function Room()
 
     var status = Status.WaitingPlayer;
     var players = new Array();
+    var pickedCallback = null;
 
     this.addPlayer = function(player) {
 	players.push(player);
 	player.setRoom(this);
 	if (players.length == 2)
 	    status = Status.Ready;
-    }
+    };
 
     this.startGame = function() {
 	util.puts("Matchmaker: Starting game");
 	for (var i = 0; i < players.length; i++) {
 	    players[i].start(i);
 	}
-    }
+    };
 
     this.isWaitingForPlayers = function() {
 	return (status == Status.WaitingPlayer);
-    }
+    };
 
     this.isReady = function() {
 	return (status == Status.Ready);
-    }
+    };
+
+    this.isPlayerInside = function(playerLogin) {
+	return (players[0].login() == playerLogin || players[1].login() == playerLogin);
+    };
+
+    this.setPickedCallback = function(callback) {
+	pickedCallback = callback;
+    };
+
+    this.asPicked = function(x, y) {
+	pickedCallback(x, y);
+    };
 }
 
 function matchPlayer(player) {
@@ -87,17 +100,17 @@ function matchPlayer(player) {
 
 module.exports = {
     // POST request match
-    requestMatch: function(request, response, callback) {
-	// retreive the POST and then match the player
-	var body = '';
-	request.on('data', function(data) {
-            body += data;
-            if (body.length > 1e6) {
-		request.connection.destroy(); // to avoid flood
-            }
-	});
-	request.on('end', function () {
-	    matchPlayer(new Player(request, response, callback, body));
-	});
+    requestMatch: function(request, response, login, callback) {
+	matchPlayer(new Player(request, response, callback, login));
+    },
+
+    // return the room containing the given player login
+    getRoom: function(playerLogin) {
+	for (var i = 0; i < rooms.length; i++) {
+	    if (rooms[i].isPlayerInside(playerLogin)) {
+		return rooms[i];
+	    }
+	}
+	return null;
     }
 }
