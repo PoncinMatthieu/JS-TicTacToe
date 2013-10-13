@@ -62,7 +62,7 @@ var callbacks = {
 		util.puts("-> Player " + POST["login"] + " picked. " + POST["x"] + ":" + POST["y"]);
                 var room = matchmaker.getRoom(POST["login"])
 		if (room != null) {
-		    room.asPicked(POST["x"], POST["y"]);
+		    room.hasPicked(POST["x"], POST["y"], POST["login"]);
 		    dispatcher.sendResponse(response, 200, {"Content-Type": "text/plain"}, "OK");
 		}
             });

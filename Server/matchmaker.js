@@ -1,5 +1,7 @@
 
 var util = require("util");
+var math = require("../Shared/math");
+var game = require("../Shared/game");
 
 // define the rooms
 var rooms = new Array();
@@ -14,24 +16,25 @@ Status = {
 // define a player with his match request / response
 function Player(request, response, callback, login)
 {
-    var room = null;
-    var index = 0;
+    var _room = null;
+    var _index = 0;
 
     util.puts("Matchmaker: New player " + login);
 
     this.login = function () {return login;};
-    this.setRoom = function (r) {room = r;};
+    this.setRoom = function (r) {_room = r;};
+    this.index = function () {return _index;}
 
     this.start = function (i) {
-	index = i;
-	callback(request, response, index);
+	_index = i;
+	callback(request, response, _index);
     };
 
     // setup a callback to be informed when a request is aborted
     request.connection.on('close', function() {
 	util.puts("Matchmaker: Connection aborted, removing player and associated room.");
 	if (room != null)
-	    rooms.splice(rooms.indexOf(room), 1);
+	    rooms.splice(rooms.indexOf(_room), 1);
     });
 }
 
@@ -43,6 +46,8 @@ function Room()
     var status = Status.WaitingPlayer;
     var players = new Array();
     var pickedCallback = null;
+
+    var grid = new game.Grid();
 
     this.addPlayer = function(player) {
 	players.push(player);
@@ -71,12 +76,40 @@ function Room()
 		(players.length > 1 && players[1].login() == playerLogin));
     };
 
+    this.getPlayer = function(playerLogin) {
+	if (players.length > 0 && players[0].login() == playerLogin)
+	    return players[0];
+	else if (players.length > 1 && players[1].login() == playerLogin)
+	    return players[1];
+	return null;
+    };
+
     this.setPickedCallback = function(callback) {
 	pickedCallback = callback;
     };
 
-    this.asPicked = function(x, y) {
-	pickedCallback(x, y);
+    this.hasPicked = function(x, y, login) {
+	var player = this.getPlayer(login);
+	if (player != null)
+	{
+	    grid.set(math.Coord(parseInt(x),parseInt(y)), player.index());
+
+	    for (var i = 0; i < 3; i++)
+	    {
+		for (var j = 0; j < 3; j++)
+		{
+		    process.stdout.write(grid.get(math.Coord(j,i)) + " ");
+		}
+		util.puts("");
+	    }
+
+
+	    if (grid.isOver())
+	    {
+		util.puts("Game Over: " + ((grid.isDraw()) ? 'This is a draw.' : ((player.index() == 0) ? 'Cross wins' : 'Circle wins')) );
+	    }
+	    pickedCallback(x, y);
+	}
     };
 }
 
