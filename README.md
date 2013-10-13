@@ -19,9 +19,11 @@ Starting the server
 -------------------
 
 With node.js:
+
     nodejs server.js
 
 As a Daemon:
+
     forever start server.js
 
 
