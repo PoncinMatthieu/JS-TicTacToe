@@ -8,10 +8,18 @@ This project was created only for fun and practice on JavaScript, it includes an
 The TicTacToe is currently played using AJAX and on a table html element.
 
 
+Live test
+---------
+The game can be played at http://3dnovac.eu:8080/
+
+Put your pseudo and click on "Request Match".
+
 Planned improvements
 --------------------
 
 - Adding communication method via socket.io
+- Adding a Bot to play in single player
+- Adding session management
 - Adding new interfaces: (The user will be able to select which interface to use)
     - Using Canvas
     - Using WebGL
