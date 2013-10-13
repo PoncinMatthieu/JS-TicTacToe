@@ -1,12 +1,17 @@
 JS-TicTacToe
 ============
 
-JavaScript Multiplayer TicTacToe using Node.js
+Full JavaScript project implementing the Multiplayer game TicTacToe with a Node.js server.
 
-This project includes a server HTTP with Matchmaking entirely in JavaScript for educational purpose.
+This project was created only for fun and practice on JavaScript, it includes an Node.js HTTP server including a Dispatcher and a Matchmaker. It also includes a JavaScript web interface.
 
-The TicTacToe is currently played with AJAX and on a table html element, in the future I plan on adding modules to test:
-    - Canvas
-    - socket.io
+The TicTacToe is currently played using AJAX and on a table html element.
 
-CSS is ugly but will be improved in time.
+
+Planned improvements
+--------------------
+
+- Adding communication method via socket.io
+- Adding new interfaces: (The user will be able to select which interface to use)
+    - Using Canvas
+    - Using WebGL
