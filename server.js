@@ -29,11 +29,19 @@ var callbacks = {
 		}
 	    });
 	    request.on('end', function () {
-		matchmaker.requestMatch(request, response, body, function (request, response, playerIndex) {
-		    // once a match is found, the game starts.
-		    // we return the player index to indicate who starts the game.
-		    dispatcher.sendResponse(response, 200, {"Content-Type": "text/plain"}, playerIndex.toString());
-		});
+		// check if the player login already exists
+		if (matchmaker.getRoom(body) != null)
+		{
+		    dispatcher.sendResponse(response, 400, {"Content-Type": "text/plain"}, '');
+		}
+		else
+		{
+		    matchmaker.requestMatch(request, response, body, function (request, response, playerIndex) {
+			// once a match is found, the game starts.
+			// we return the player index to indicate who starts the game.
+			dispatcher.sendResponse(response, 200, {"Content-Type": "text/plain"}, playerIndex.toString());
+		    });
+		}
 	    });
 	}
     },

@@ -4,6 +4,18 @@ body
     text-align: center;
 }
 
+#top-panel
+{
+    border-bottom-style: solid;
+    border-bottom-width: 2px;
+    margin-bottom: 50px;
+}
+
+#info
+{
+    color: red;
+}
+
 button
 {
     margin: 10px;

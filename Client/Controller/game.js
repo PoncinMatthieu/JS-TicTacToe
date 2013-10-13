@@ -1,10 +1,8 @@
 
 $(function() {
     var grid = new Grid();
-    grid.update();
-
-    var pop = new Popup("Please request a match !");
-    pop.display();
+    var info = new Info("Please request a match!");
+    info.display();
 
 
     function play(l, playerIndex, currentTurn) {
@@ -20,16 +18,16 @@ $(function() {
 			grid.set(coord, currentTurn);
 			grid.update();
 			if (grid.isOver()) // game over ?
-			    pop.update('Game Over.<br/>' + (grid.isDraw() ? 'This is a draw !' : 'You win !'));
+			    info.update('Game Over.<br/>' + (grid.isDraw() ? 'This is a draw !' : 'You win !'));
 			else
 			    play(l, playerIndex, (currentTurn + 1) % 2); // we picked, next turn.
 		    },
 		    error: function() {
-			pop.update('An error occured.');
+			info.update('An error occured.');
 		    }
 		});
 	    });
-	    pop.remove();
+	    info.remove();
 	} else { // it's not our turn, we send a request to wait for the other player to pick
             $.ajax({
                 type: 'POST',
@@ -47,7 +45,7 @@ $(function() {
                     grid.set(coord, currentTurn);
                     grid.update();
 		    if (grid.isOver()) // game over ?
-			pop.update('Game Over.<br/>' + (grid.isDraw() ? 'This is a draw !' : 'You lose !'));
+			info.update('Game Over.<br/>' + (grid.isDraw() ? 'This is a draw !' : 'You lose !'));
 		    else
 			play(l, playerIndex, (currentTurn + 1) % 2); // the player picked, next turn.
                 },
@@ -57,7 +55,7 @@ $(function() {
 		    play(l, playerIndex, currentTurn);
                 }
             });
-	    pop.update('Waiting for your turn.');
+	    info.update('Waiting for your turn.');
 	}
     }
 
@@ -65,12 +63,12 @@ $(function() {
     $("#requestMatch").click(function() {
 	var v = $("#login").val();
 	if (v == "") {
-	    pop.update('Please set a login.');
+	    info.update('Please set a login.');
 	    return;
 	}
 
 	// requesting a match
-        pop.update("Waiting for a match.");
+        info.update("Waiting for a match.");
 
         $.ajax({
             type: 'POST',
@@ -78,11 +76,17 @@ $(function() {
 	    data: v,
             timeout: 10000, // 10 seconds
             success: function(data) {
-		pop.update("Match found, starting game. " + data);
+		info.update("Match found, starting game. " + data);
+		grid.update();
 		play(v, parseInt(data), 0);
 	    },
-            error: function() {
-		pop.update('No match was found. Please try again.');
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+		if (XMLHttpRequest.status == 0)
+		    info.update('No match was found. Please try again.');
+		else if (XMLHttpRequest.status == 400)
+		    info.update('Player already registered in the matchmaker! Please use another pseudo.');
+		else
+		    info.update('Error ' + XMLHttpRequest.status + ': ' + errorThrown);
 	    }
         });
     });

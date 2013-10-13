@@ -67,7 +67,8 @@ function Room()
     };
 
     this.isPlayerInside = function(playerLogin) {
-	return (players[0].login() == playerLogin || players[1].login() == playerLogin);
+	return ((players.length > 0 && players[0].login() == playerLogin) ||
+		(players.length > 1 && players[1].login() == playerLogin));
     };
 
     this.setPickedCallback = function(callback) {
