@@ -33,7 +33,7 @@ function Player(request, response, callback, login)
     // setup a callback to be informed when a request is aborted
     request.connection.on('close', function() {
 	util.puts("Matchmaker: Connection aborted, removing player and associated room.");
-	if (room != null)
+	if (_room != null)
 	    rooms.splice(rooms.indexOf(_room), 1);
     });
 }

@@ -2,10 +2,8 @@
 $(function() {
     var grid = new Grid();
     var info = new Info("Please request a match!");
+    var gameSarted = false;
     info.display();
-
-    // \todo to remove
-    grid.update();
 
     function play(l, playerIndex, currentTurn) {
 	if (playerIndex == currentTurn) { // it's our turn, we set pick events
@@ -79,6 +77,7 @@ $(function() {
             timeout: 10000, // 10 seconds
             success: function(data) {
 		info.update("Match found, starting game. " + data);
+		gameStarted = true;
 		grid.update();
 		play(v, parseInt(data), 0);
 	    },
@@ -94,7 +93,8 @@ $(function() {
     });
 
     $("#left-panel").change(function() {
-	grid.update();
+	if (gameSarted)
+	    grid.update();
     });
 });
 
