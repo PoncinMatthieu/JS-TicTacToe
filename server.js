@@ -36,11 +36,11 @@ var callbacks = {
 		}
 		else
 		{
-		    matchmaker.requestMatch(request, response, body, function (request, response, playerIndex) {
+		    matchmaker.requestMatch(request, response, body.slice(0, -1), function (request, response, playerIndex) {
 			// once a match is found, the game starts.
 			// we return the player index to indicate who starts the game.
 			dispatcher.sendResponse(response, 200, {"Content-Type": "text/plain"}, playerIndex.toString());
-		    });
+		    }, ((body.slice(-1) == "1") ? true : false));
 		}
 	    });
 	}
@@ -65,6 +65,11 @@ var callbacks = {
 		    room.hasPicked(POST["x"], POST["y"], POST["login"]);
 		    dispatcher.sendResponse(response, 200, {"Content-Type": "text/plain"}, "OK");
 		}
+		else
+		{
+		    util.puts("The room cannot be found!");
+		    dispatcher.sendResponse(response, 400, {"Content-Type": "text/plain"}, "");
+		}
             });
 	}
     },
@@ -83,7 +88,7 @@ var callbacks = {
             request.on('end', function () {
 		var room = matchmaker.getRoom(body);
 		if (room != null) {
-		    room.setPickedCallback(function(x, y) {
+		    room.setPickedCallback(room.getPlayer(body), function(x, y) {
 			dispatcher.sendResponse(response, 200, {"Content-Type": "text/plain"}, x + " " + y);
 		    });
 		}

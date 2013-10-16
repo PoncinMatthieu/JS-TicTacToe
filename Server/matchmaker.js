@@ -21,11 +21,12 @@ function Player(request, response, callback, login)
 
     util.puts("Matchmaker: New player " + login);
 
-    this.login = function () {return login;};
-    this.setRoom = function (r) {_room = r;};
-    this.index = function () {return _index;}
+    this.isBot = function() {return false;};
+    this.login = function() {return login;};
+    this.setRoom = function(r) {_room = r;};
+    this.index = function() {return _index;};
 
-    this.start = function (i) {
+    this.start = function(i) {
 	_index = i;
 	callback(request, response, _index);
     };
@@ -38,23 +39,81 @@ function Player(request, response, callback, login)
     });
 }
 
+function Bot()
+{
+    var _room = null;
+    var _index = 0;
+    var _bot = this;
+
+    this.isBot = function() {return true;};
+    this.setRoom = function(r) {_room = r;};
+    this.index = function() {return _index;};
+
+    this.start = function(i) {
+	_index = i;
+	if (_index == 0)
+	    play();
+    };
+
+    this.play = function () {
+	// pick a random coord
+	var num = 0;
+	for (var x = 0; x < 3; x++) {
+	    for (var y = 0; y < 3; y++) {
+		if (_room.getGrid().get(math.Coord(x,y)) == -1)
+		    num++;
+	    }
+	}
+	var r = Math.floor(Math.random()*num);
+
+	var i = 0;
+	for (var x = 0; x < 3; x++) {
+	    for (var y = 0; y < 3; y++) {
+		if (_room.getGrid().get(math.Coord(x,y)) == -1)
+		{
+		    if (r == i) {
+			_room.playerPicked(x,y, _bot);
+			return;
+		    }
+		    i++;
+		}
+	    }
+	}
+    };
+
+    //function picked(x, y)
+    //{
+//	play(); // play once the other player picked
+  //  }
+}
+
 // define a Room to match 2 players together and represent a running game
-function Room()
+function Room(withBot)
 {
     util.puts("Matchmaker: Creating a new room");
 
+    var _room = this;
     var status = Status.WaitingPlayer;
     var players = new Array();
     var pickedCallback = null;
 
     var grid = new game.Grid();
+    var lastPick = null;
+
+    this.getGrid = function() {return grid;}
+    this.getLastPick = function() {return lastPick;}
 
     this.addPlayer = function(player) {
 	players.push(player);
 	player.setRoom(this);
+
+	if (withBot && !player.isBot()) {
+	    this.addPlayer(new Bot());
+	}
 	if (players.length == 2)
 	    status = Status.Ready;
     };
+
 
     this.startGame = function() {
 	util.puts("Matchmaker: Starting game");
@@ -72,8 +131,8 @@ function Room()
     };
 
     this.isPlayerInside = function(playerLogin) {
-	return ((players.length > 0 && players[0].login() == playerLogin) ||
-		(players.length > 1 && players[1].login() == playerLogin));
+	return ((players.length > 0 && players[0].login !== undefined && players[0].login() == playerLogin) ||
+		(players.length > 1 && players[1].login !== undefined && players[1].login() == playerLogin));
     };
 
     this.getPlayer = function(playerLogin) {
@@ -84,63 +143,84 @@ function Room()
 	return null;
     };
 
-    this.setPickedCallback = function(callback) {
+    this.setPickedCallback = function(player, callback) {
 	pickedCallback = callback;
+	if (lastPick != null)
+	    callPickedCallback(player, lastPick.x, lastPick.y);
     };
 
     this.hasPicked = function(x, y, login) {
 	var player = this.getPlayer(login);
 	if (player != null)
-	{
-	    grid.set(math.Coord(parseInt(x),parseInt(y)), player.index());
-
-	    for (var i = 0; i < 3; i++)
-	    {
-		for (var j = 0; j < 3; j++)
-		{
-		    process.stdout.write(grid.get(math.Coord(j,i)) + " ");
-		}
-		util.puts("");
-	    }
-
-
-	    // game over
-	    if (grid.isOver())
-	    {
-		util.puts("Game Over: " + ((grid.isDraw()) ? 'This is a draw.' : ((player.index() == 0) ? 'Cross wins' : 'Circle wins')) );
-		var index = rooms.indexOf(this);
-		if (index > -1) { // remove the room
-		    rooms.splice(index, 1);
-		}
-	    }
-	    pickedCallback(x, y);
-	}
+	    this.playerPicked(x, y, player);
     };
+
+    this.playerPicked = function(x, y, player) {
+	grid.set(math.Coord(parseInt(x),parseInt(y)), player.index());
+
+	for (var i = 0; i < 3; i++) {
+	    for (var j = 0; j < 3; j++) {
+		process.stdout.write(grid.get(math.Coord(j,i)) + " ");
+	    }
+	    util.puts("");
+	}
+
+	if (pickedCallback != null)
+	    callPickedCallback(player, x,y);
+	else if (withBot && !player.isBot())
+	    players[(player.index() + 1 % 2)].play();
+	else
+	    lastPick = math.Coord(x,y);
+    };
+
+    function callPickedCallback(player, x, y) {
+	var c = pickedCallback;
+	pickedCallback = null;
+	lastPick = null;
+	c(x, y);
+    }
+
+    this.remove = function () {
+	var index = rooms.indexOf(_room);
+	if (index > -1) { // remove the room
+	    rooms.splice(index, 1);
+	}
+    }
 }
 
-function matchPlayer(player) {
+function matchPlayer(player, withBot) {
     var r;
 
+    // check if games are over
+    for (var i = 0; i < rooms.length; i++) {
+	if (rooms[i].getGrid().isOver()) {
+	    util.puts("Game Over destroying room");
+	    rooms[i].remove();
+	}
+    }
+
     // check if a room is waiting for a player
-    if (rooms.length > 0 && rooms[rooms.length - 1].isWaitingForPlayers()) {
+    if (!withBot && rooms.length > 0 && rooms[rooms.length - 1].isWaitingForPlayers()) {
 	r = rooms[rooms.length - 1];
 	r.addPlayer(player);
-	if (r.isReady()) {
-	    r.startGame();
-	}
     } else {
 	// create a new room
-	r = new Room();
+	r = new Room(withBot);
 	r.addPlayer(player);
 	rooms.push(r);
+    }
+
+    // start the game if the room is full
+    if (r.isReady()) {
+	r.startGame();
     }
 }
 
 
 module.exports = {
     // POST request match
-    requestMatch: function(request, response, login, callback) {
-	matchPlayer(new Player(request, response, callback, login));
+    requestMatch: function(request, response, login, callback, withBot) {
+	matchPlayer(new Player(request, response, callback, login), withBot);
     },
 
     // return the room containing the given player login

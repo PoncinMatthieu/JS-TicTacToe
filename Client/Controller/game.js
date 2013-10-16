@@ -60,11 +60,14 @@ $(function() {
 
 
     $("#requestMatch").click(function() {
-	var v = $("#login").val();
-	if (v == "") {
+	var login = $("#login").val();
+	if (login == "") {
 	    info.update('Please set a login.');
 	    return;
 	}
+
+	var v = login;
+	v += ($("input[name=request]:checked").val() == "player") ? "0" : "1";
 
 	// requesting a match
         info.update("Waiting for a match.");
@@ -78,7 +81,7 @@ $(function() {
 		info.update("Match found, starting game. " + data);
 		grid = new Grid();
 		grid.update();
-		play(v, parseInt(data), 0);
+		play(login, parseInt(data), 0);
 	    },
             error: function(XMLHttpRequest, textStatus, errorThrown) {
 		if (XMLHttpRequest.status == 0)
@@ -91,7 +94,7 @@ $(function() {
         });
     });
 
-    $("#left-panel").change(function() {
+    $("#left-panel1").change(function() {
 	if (grid != null)
 	    grid.update();
     });
