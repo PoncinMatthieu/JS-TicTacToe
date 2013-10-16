@@ -4,6 +4,11 @@ body
     text-align: center;
 }
 
+h3
+{
+    margin: 0px 0px 5px 0px;
+}
+
 #top-panel
 {
     border-bottom-style: solid;
@@ -12,17 +17,19 @@ body
     min-height: 100px;
 }
 
-#left-panel
+#left-panel1, #left-panel2
 {
+    text-align: left;
     float: left;
     width: 200px;
+    min-height: 90px;
     border-right-style: solid;
     border-right-width: 1px;
 }
 
-#left-panel h3
+.centered
 {
-    margin: 0px 0px 5px 0px;
+    text-align: center;
 }
 
 #info

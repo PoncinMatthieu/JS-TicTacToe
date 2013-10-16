@@ -7,11 +7,20 @@
 
   <body>
     <div id="top-panel">
-      <div id="left-panel">
-	<h3>Interface</h3>
+      <div id="left-panel1">
+	<div class="centered">
+	  <h3>Interface</h3>
+	</div>
 	<input type="radio" name="interface" value="table" checked="true">Table<br>
 	<input type="radio" name="interface" value="canvas">Canvas<br>
 	<input type="radio" name="interface" value="webgl" disabled="true">WebGL
+      </div>
+      <div id="left-panel2">
+	<div class="centered">
+	  <h3>Match request</h3>
+	</div>
+	<input type="radio" name="request" value="player" checked="true">With another player<br>
+        <input type="radio" name="request" value="bot" disabled="true">With a bot
       </div>
       <div>
 	<label for="login">Pseudo:</label>
