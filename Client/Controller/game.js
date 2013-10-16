@@ -92,5 +92,9 @@ $(function() {
 	    }
         });
     });
+
+    $("#left-panel").change(function() {
+	grid.update();
+    });
 });
 

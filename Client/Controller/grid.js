@@ -5,7 +5,7 @@ function Grid() {
     var thisGrid = this;
     var callback = null;
 
-    var grid = $("#grid");
+    var table = $("#table");
     var elems = ['',
 		 '<img src="Client/View/Cross.png" alt="X" />',
 		 '<img src="Client/View/Circle.png" alt="O" />'];
@@ -14,15 +14,19 @@ function Grid() {
     var context = canvas.getContext('2d');
 
 
-    //this.set(Tools.Coord(0,0), 0);
-    //this.set(Tools.Coord(1,1), 1);
-
     this.update = function() {
+	table.empty();
+	context.clearRect(0,0,300,300);
+
 	var id = $("input[name=interface]:checked").val();
 	if (id == "table")
 	    drawTable(this);
 	else if (id == "canvas")
 	    drawCanvas(this);
+
+	// setup again the callback if it was set
+	if (callback != null)
+	    this.readyToPick(callback);
     };
 
     this.readyToPick = function(c) {
@@ -30,14 +34,9 @@ function Grid() {
 	var id = $("input[name=interface]:checked").val();
 
         if (id == "table")
-	{
-	    //$("td").click(tableClickedEvent);
 	    $("td").bind("click", tableClickedEvent);
-	}
 	else if (id == "canvas")
-	{
 	    canvas.addEventListener("mouseup", canvasClickedEvent, false);
-	}
     };
 
 
@@ -54,15 +53,12 @@ function Grid() {
 	    newElems += "</tr>";
 	}
 
-	// remove the elements and put the new ones
-	grid.empty();
-	grid.html(newElems);
+	table.html(newElems);
     }
 
     function drawCanvas(g) {
 	var coord = Tools.Coord();
 
-	context.clearRect(0,0,300,300);
 	context.strokeStyle = "black";
 	context.strokeRect(0,0,300,300);
 
