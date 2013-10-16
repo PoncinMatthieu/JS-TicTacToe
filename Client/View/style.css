@@ -9,6 +9,20 @@ body
     border-bottom-style: solid;
     border-bottom-width: 2px;
     margin-bottom: 50px;
+    min-height: 100px;
+}
+
+#left-panel
+{
+    float: left;
+    width: 200px;
+    border-right-style: solid;
+    border-right-width: 1px;
+}
+
+#left-panel h3
+{
+    margin: 0px 0px 5px 0px;
 }
 
 #info
@@ -28,6 +42,11 @@ button
     border-style: solid;
     border-width: 2px;
     table-layout: fixed;
+}
+
+#canvas
+{
+    margin: 5px;
 }
 
 #grid td

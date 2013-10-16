@@ -7,18 +7,30 @@
 
   <body>
     <div id="top-panel">
-      <label for="login">Pseudo:</label>
-      <input id="login" type="text" />
-      <button id="requestMatch" type="button">Request Match</button>
+      <form>
+      <div id="left-panel">
+	<h3>Interface</h3>
+	<input type="radio" name="interface" value="table" checked="true">Table<br>
+	<input type="radio" name="interface" value="canvas">Canvas<br>
+	<input type="radio" name="interface" value="webgl" disabled="true">WebGL
+      </div>
+      <div>
+	<label for="login">Pseudo:</label>
+	<input id="login" type="text" />
+	<button id="requestMatch" type="button">Request Match</button>
+      </div>
+      </form>
     </div>
 
     <div>
       <table id="grid">
       </table>
+      <canvas id="canvas" width="300" height="300">
+      </canvas>
     </div>
 
     <script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
-    <script src="Shared/math.js"></script>
+    <script src="Shared/tools.js"></script>
     <script src="Shared/game.js"></script>
     <script src="Client/Controller/grid.js"></script>
     <script src="Client/Controller/info.js"></script>

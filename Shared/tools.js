@@ -9,4 +9,4 @@
        };
    };
 
-})((typeof exports === 'undefined') ? (this['Math']={}) : exports);
+})((typeof exports === 'undefined') ? (this['Tools']={}) : exports);

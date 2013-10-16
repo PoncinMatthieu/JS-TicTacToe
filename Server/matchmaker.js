@@ -1,6 +1,6 @@
 
 var util = require("util");
-var math = require("../Shared/math");
+var math = require("../Shared/tools");
 var game = require("../Shared/game");
 
 // define the rooms
