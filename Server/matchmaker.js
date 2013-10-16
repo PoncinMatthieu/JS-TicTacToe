@@ -104,9 +104,14 @@ function Room()
 	    }
 
 
+	    // game over
 	    if (grid.isOver())
 	    {
 		util.puts("Game Over: " + ((grid.isDraw()) ? 'This is a draw.' : ((player.index() == 0) ? 'Cross wins' : 'Circle wins')) );
+		var index = rooms.indexOf(this);
+		if (index > -1) { // remove the room
+		    rooms.splice(index, 1);
+		}
 	    }
 	    pickedCallback(x, y);
 	}

@@ -1,8 +1,7 @@
 
 $(function() {
-    var grid = new Grid();
+    var grid = null;
     var info = new Info("Please request a match!");
-    var gameSarted = false;
     info.display();
 
     function play(l, playerIndex, currentTurn) {
@@ -77,7 +76,7 @@ $(function() {
             timeout: 10000, // 10 seconds
             success: function(data) {
 		info.update("Match found, starting game. " + data);
-		gameStarted = true;
+		grid = new Grid();
 		grid.update();
 		play(v, parseInt(data), 0);
 	    },
@@ -93,7 +92,7 @@ $(function() {
     });
 
     $("#left-panel").change(function() {
-	if (gameSarted)
+	if (grid != null)
 	    grid.update();
     });
 });
