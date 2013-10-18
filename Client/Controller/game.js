@@ -4,6 +4,9 @@ $(function() {
     var info = new Info("Please request a match!");
     info.display();
 
+grid = new Grid();
+grid.update();
+
     function play(l, playerIndex, currentTurn) {
 	if (playerIndex == currentTurn) { // it's our turn, we set pick events
 	    grid.readyToPick(function(coord) {

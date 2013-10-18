@@ -13,7 +13,7 @@
 	</div>
 	<input type="radio" name="interface" value="table" checked="true">Table<br>
 	<input type="radio" name="interface" value="canvas">Canvas<br>
-	<input type="radio" name="interface" value="webgl" disabled="true">WebGL
+	<input type="radio" name="interface" value="webgl">WebGL
       </div>
       <div id="left-panel2">
 	<div class="centered">
@@ -30,15 +30,61 @@
     </div>
 
     <div>
-      <table id="table">
-      </table>
-      <canvas id="canvas" width="300" height="300">
-      </canvas>
+      <table id="table" hidden="true"></table>
+      <canvas id="canvas" width="300" height="300" hidden="true"></canvas>
+      <canvas id="webgl" width="300" height="300" hidden="true"></canvas>
     </div>
 
+    <script id="shader-fs" type="x-shader/x-fragment">
+      precision mediump float;
+
+      void main(void) {
+      gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+      }
+    </script>
+
+    <script id="shader-vs" type="x-shader/x-vertex">
+      attribute vec2 aVertexPosition;
+
+      uniform mat4 uMVMatrix;
+      uniform mat4 uPMatrix;
+
+      void main(void) {
+      gl_Position = uMVMatrix * uPMatrix * vec4(aVertexPosition, 0.0, 1.0);
+      }
+    </script>
+
+    <script id="shader-fs-tex" type="x-shader/x-fragment">
+      precision mediump float;
+
+      varying vec2 vTextureCoord;
+      uniform sampler2D uSampler;
+
+      void main(void) {
+      gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.x, vTextureCoord.y));
+      }
+    </script>
+
+    <script id="shader-vs-tex" type="x-shader/x-vertex">
+      attribute vec2 aVertexPosition;
+      attribute vec2 aTextureCoord;
+
+      uniform mat4 uMVMatrix;
+      uniform mat4 uPMatrix;
+
+      varying vec2 vTextureCoord;
+
+      void main(void) {
+      gl_Position = uMVMatrix * uPMatrix * vec4(aVertexPosition, 0.0, 1.0);
+      vTextureCoord = aTextureCoord;
+      }
+    </script>
+
     <script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
+    <script src="Shared/glMatrix-0.9.5.min.js"></script>
     <script src="Shared/tools.js"></script>
     <script src="Shared/game.js"></script>
+    <script src="Client/Controller/interfaces.js"></script>
     <script src="Client/Controller/grid.js"></script>
     <script src="Client/Controller/info.js"></script>
     <script src="Client/Controller/game.js"></script>

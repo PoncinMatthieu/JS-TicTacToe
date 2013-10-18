@@ -31,8 +31,4 @@ Planned improvements
 --------------------
 
 - Adding communication method via socket.io
-- Adding a Bot to play in single player
 - Adding session management
-- Adding new interfaces: (The user will be able to select which interface to use)
-    - Using Canvas
-    - Using WebGL
