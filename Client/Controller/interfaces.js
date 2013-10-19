@@ -199,6 +199,10 @@ my.GLInterface = function(g) {
 		}
             }
 	}
+
+	// setup again the callback if it was set
+	if (callback != null)
+	    this.readyToPick(callback);
     }
 
     function initGL(canvas) {
